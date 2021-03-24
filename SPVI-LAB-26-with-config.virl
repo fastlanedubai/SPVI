@@ -1678,7 +1678,6 @@ interface GigabitEthernet0/0/0/5
  description link to CE3
  vrf forwarding CustomerB
  ip address 192.168.203.3 255.255.255.0
- speed 1000
  no negotiation auto
  cdp enable
 !
