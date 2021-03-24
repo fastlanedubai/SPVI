@@ -163,15 +163,15 @@ interface GigabitEthernet1
 !
 
 interface GigabitEthernet2
- description Link to PE1 TenGigabitEthernet0/0/0/3
+ description Link to 
  no switchport
  vrf forwarding CustomerA
  ip address 192.168.101.11 255.255.255.0
  ipv6 address 2001:DB8:192:168:101::11/80
  ipv6 enable
 !
-interface TenGigabitEthernet3
- description Link to PE1 TenGigabitEthernet0/0/0/4
+interface GigabitEthernet3
+ description Link to PE1 
  no switchport
  vrf forwarding CustomerB
  ip address 192.168.201.21 255.255.255.0
@@ -1300,8 +1300,7 @@ interface GigabitEthernet0/0/0/6
 interface preconfigure MgmtEth0/RSP0/CPU0/0
  ipv4 address 10.10.10.26 255.255.255.0
 !
-interface preconfigure MgmtEth0/RSP0/CPU0/1
- shutdown
+
 !
 route-policy RP
   if destination in (209.165.201.0/27) then
@@ -1678,7 +1677,7 @@ interface GigabitEthernet0/0/0/5
  description link to CE3
  vrf forwarding CustomerB
  ip address 192.168.203.3 255.255.255.0
- no negotiation auto
+negotiation auto
  cdp enable
 !
 
