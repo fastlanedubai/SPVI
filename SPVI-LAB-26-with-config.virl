@@ -1690,7 +1690,7 @@ interface GigabitEthernet0/0/0/2
  cdp enable
  mpls ip
 !
-interface TenGigabitEthernet0/0/0/3
+interface GigabitEthernet0/0/0/3
  description Link to P2 
  mtu 9216
  ip address 192.168.123.3 255.255.255.0
