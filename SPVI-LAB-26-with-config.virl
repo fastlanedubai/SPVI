@@ -1002,6 +1002,197 @@ group cisco-support
 password lab
 !
 !
+hostname PE2
+banner motd ^ This is PE2 in Pod Group 15 for POD 1 ^
+logging console debugging
+domain name cisco.com
+domain lookup disable
+telnet vrf Mgmt-intf ipv4 server max-servers 15
+username cisco
+ group root-lr
+ group cisco-support
+ secret 5 $1$pa1M$o/RH3u6Thqb1OoiQhQbXE/
+!
+cdp
+vrf CustomerA
+ address-family ipv4 unicast
+  import route-target
+   65000:10
+  !
+  export route-target
+   65000:10
+  !
+ !        
+!
+vrf CustomerB
+ address-family ipv4 unicast
+  import route-target
+   65000:20
+  !
+  export route-target
+   65000:20
+  !
+ !
+!
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 0 0
+ transport input all
+!
+tftp client source-interface MgmtEth0/RP0/CPU0/0
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+interface Loopback0
+ ipv4 address 10.2.2.2 255.255.255.255
+!
+interface MgmtEth0/RP0/CPU0/0
+ description Management Network for Pod
+ vrf Mgmt-intf
+ ipv4 address 172.21.116.20 255.255.255.0
+!
+
+interface gigE0/0/0/1
+ description Link to P1 
+ ipv4 address 192.168.112.2 255.255.255.0
+!         
+interface GigE0/0/0/2
+ description Link to P2 GigabitEthernet0/0/0/2
+ ipv4 address 192.168.122.2 255.255.255.0
+!
+interface GigE0/0/0/3
+ description Link to CE2 
+ vrf CustomerA
+ ipv4 address 192.168.102.2 255.255.255.0
+!
+interface GigE0/0/0/4
+ description Link to CE2 
+ vrf CustomerB
+ ipv4 address 192.168.202.2 255.255.255.0
+!
+router ospf 1
+ router-id 10.2.2.2
+ address-family ipv4
+ area 0
+  interface GigE0/0/0/1
+   cost 10
+  !
+  interface GigE0/0/0/2
+  !       
+ !
+!
+router bgp 65000
+ address-family vpnv4 unicast
+ !
+ neighbor 10.12.12.12
+  remote-as 65000
+  update-source Loopback0
+  address-family vpnv4 unicast
+   next-hop-self
+  !
+ !
+ vrf CustomerA
+  rd 65000:10
+  address-family ipv4 unicast
+   redistribute connected
+  !
+ !
+ vrf CustomerB
+  rd 65000:20
+  address-family ipv4 unicast
+   redistribute connected
+  !       
+ !
+!
+mpls oam
+!
+mpls ldp
+ interface GigE0/0/0/1
+ !
+ interface GigE0/0/0/2
+ !
+!
+end
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="192.168.112.2" netPrefixLenV4="30"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="192.168.122.2" netPrefixLenV4="30"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="192.168.102.2" netPrefixLenV4="30"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4" ipv4="192.168.202.2" netPrefixLenV4="30"/>
+        <interface id="5" name="GigabitEthernet0/0/0/5"/>
+        <interface id="6" name="GigabitEthernet0/0/0/6"/>
+    </node>
+	
+	 <node name="P1" type="SIMPLE" subtype="IOS XRv 9000" location="402,57" ipv4="10.11.11.11">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR9000v Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname P1
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+username cisco
+group root-lr
+group cisco-support
+password cisco
+!
+username admin
+group root-lr
+group cisco-support
+password admin
+!
+username lab
+group root-lr
+group cisco-support
+password lab
+!
 hostname P1
 banner motd ^ This is P1 in Pod Group 15 for POD 1 ^
 logging console debugging
@@ -1049,17 +1240,17 @@ interface GigabitEthernet0/0/0/0
  shutdown
 !         
 interface GigabitEthernet0/0/0/1
- description Link to PE1 
+ description Link to PE1 TenGigabitEthernet0/0/0/1
  cdp
  ipv4 address 192.168.111.11 255.255.255.0
 !
 interface GigabitEthernet0/0/0/2
- description Link to PE2 
+ description Link to PE2 TenGigabitEthernet0/0/0/1
  cdp
  ipv4 address 192.168.112.11 255.255.255.0
 !
 interface GigabitEthernet0/0/0/3
- description Link to PE3 
+ description Link to PE3 TenGigabitEthernet0/0/12
  cdp
  ipv4 address 192.168.113.11 255.255.255.0
 !
@@ -1067,12 +1258,12 @@ interface GigabitEthernet0/0/0/4
  shutdown
 !
 interface GigabitEthernet0/0/0/5
- description Link to P2 
+ description Link to P2 GigabitEthernet0/0/0/5
  cdp
  ipv4 address 192.168.12.11 255.255.255.0
 !         
 interface GigabitEthernet0/0/0/6
- description Link to P2 
+ description Link to P2 GigabitEthernet0/0/0/6
  cdp
  ipv4 address 192.168.21.11 255.255.255.0
 !
@@ -1161,8 +1352,6 @@ ipsla
 ssh server v2
 ssh server vrf Mgmt-intf
 end
-    !
-!
         </entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
