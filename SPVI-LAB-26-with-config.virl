@@ -157,7 +157,7 @@ interface GigabitEthernet1
  description Management Network for Pod
  vrf forwarding Mgmt-vrf
  ip address 172.21.116.11 255.255.255.0
- shutdown
+ no shutdown
  speed 1000
  negotiation auto
 !
@@ -405,7 +405,7 @@ interface GigabitEthernet1
  description Management Network for Pod
  vrf forwarding Mgmt-vrf
  ip address 172.21.116.21 255.255.255.0
- shutdown
+ no shutdown
  speed 1000
  negotiation auto
 !
@@ -676,7 +676,7 @@ interface GigabitEthernet1
  description Management Network for Pod
  vrf forwarding Mgmt-vrf
  ip address 172.21.116.31 255.255.255.0
- shutdown
+ no shutdown
  speed 1000
  negotiation auto
 !
@@ -866,6 +866,7 @@ interface MgmtEth0/RP0/CPU0/0
  description Management Network for Pod
  vrf Mgmt-intf
  ipv4 address 172.21.116.10 255.255.255.0
+ no shutdown
 
 !
 interface GigE0/0/0/1
@@ -1061,6 +1062,7 @@ interface MgmtEth0/RP0/CPU0/0
  description Management Network for Pod
  vrf Mgmt-intf
  ipv4 address 172.21.116.20 255.255.255.0
+ no shutdown
 !
 
 interface gigE0/0/0/1
@@ -1235,6 +1237,7 @@ interface MgmtEth0/RP0/CPU0/0
  description Management Network for Pod
  vrf Mgmt-intf
  ipv4 address 172.21.116.110 255.255.255.0
+ no shutdown
 !
 interface GigabitEthernet0/0/0/0
  shutdown
@@ -1454,6 +1457,7 @@ interface MgmtEth0/RP0/CPU0/0
  description Management Network for Pod
  vrf Mgmt-intf
  ipv4 address 172.21.116.120 255.255.255.0
+ no shutdown
 !
 interface GigabitEthernet0/0/0/0
  shutdown
@@ -1867,6 +1871,8 @@ interface GigabitEthernet0/0/0/5
  vrf forwarding CustomerB
  ip address 192.168.203.3 255.255.255.0
 negotiation auto
+speed 1000
+ no negotiation auto
  cdp enable
 !
 
@@ -1887,6 +1893,7 @@ interface GigabitEthernet0/0/0/3
  description Management Network for Pod
  vrf Mgmt-intf
  ipv4 address 172.21.116.30 255.255.255.0
+ no shutdown
 
 router ospf 1
  router-id 10.11.11.11
