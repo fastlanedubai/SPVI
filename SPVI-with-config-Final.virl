@@ -1,0 +1,2130 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
+    <node name="CE1" type="SIMPLE" subtype="CSR1000v" location="97,54" ipv4="10.1.11.1">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname CE1
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+hostname CE1
+!
+!
+vrf definition CustomerA
+ rd 65010:10
+ !
+ address-family ipv4
+  route-target export 65010:10
+  route-target import 65010:10
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition CustomerB
+ rd 65020:20
+ !
+ address-family ipv4
+  route-target export 65020:20
+  route-target import 65020:20
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 5 $1$//ZX$3eLgbaGoGN9cPwKThfkpu1
+!
+no aaa new-model
+switch 1 provision c9300-24t
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name cisco.com
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ipv6 unicast-routing
+!
+crypto pki trustpoint TP-self-signed-375368927
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-375368927
+ revocation-check none
+ rsakeypair TP-self-signed-375368927
+!
+!
+crypto pki certificate chain TP-self-signed-375368927
+ certificate self-signed 01
+        quit
+!
+!
+!
+diagnostic bootup level minimal
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+username cisco privilege 15 secret 5 $1$H114$0TYumphI1PhLMUzdWvkOj/
+!
+redundancy
+ mode sso
+!
+!
+transceiver type all
+ monitoring
+!         
+!
+class-map match-any system-cpp-police-topology-control
+  description Topology control
+class-map match-any system-cpp-police-sw-forward
+  description Sw forwarding, L2 LVX data, LOGGING
+class-map match-any system-cpp-default
+  description DHCP Snooping, EWLC control, EWCL data 
+class-map match-any system-cpp-police-sys-data
+  description Learning cache ovfl, Crypto Control, Exception, EGR Exception, NFL SAMPLED DATA, RPF Failed
+class-map match-any system-cpp-police-punt-webauth
+  description Punt Webauth
+class-map match-any system-cpp-police-l2lvx-control
+  description L2 LVX control packets
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+class-map match-any system-cpp-police-multicast-end-station
+  description MCAST END STATION
+class-map match-any system-cpp-police-multicast
+  description Transit Traffic and MCAST Data
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+class-map match-any system-cpp-police-dot1x-auth
+  description DOT1X Auth
+class-map match-any system-cpp-police-data
+  description ICMP redirect, ICMP_GEN and BROADCAST
+class-map match-any system-cpp-police-stackwise-virt-control
+  description Stackwise Virtual
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-routing-control
+  description Routing control
+class-map match-any system-cpp-police-protocol-snooping
+  description Protocol snooping
+class-map match-any system-cpp-police-system-critical
+  description System Critical and Gold
+!
+policy-map system-cpp-policy
+!
+! 
+!
+!
+!
+!
+!
+!
+!         
+!
+!
+!
+!
+!
+interface Loopback0
+ vrf forwarding CustomerA
+ ip address 10.1.11.1 255.255.255.255
+!
+interface Loopback1
+ vrf forwarding CustomerB
+ ip address 10.1.21.1 255.255.255.255
+!
+interface Loopback2
+ vrf forwarding CustomerA
+ ip address 172.16.11.1 255.255.255.0
+!
+interface Loopback3
+ vrf forwarding CustomerB
+ ip address 172.16.21.1 255.255.255.0
+!
+interface GigabitEthernet1
+ description Management Network for Pod
+ vrf forwarding Mgmt-vrf
+ ip address 172.21.116.11 255.255.255.0
+ speed 1000
+ negotiation auto
+
+!
+interface GigabitEthernet2
+ description Link to PE1 TenGigabitEthernet0/0/0/3
+ no switchport
+ vrf forwarding CustomerA
+ ip address 192.168.101.11 255.255.255.0
+ ipv6 address 2001:DB8:192:168:101::11/80
+ ipv6 enable
+!
+interface GigabitEthernet3
+ description Link to PE1 TenGigabitEthernet0/0/0/4
+ no switchport
+ vrf forwarding CustomerB
+ ip address 192.168.201.21 255.255.255.0
+ ipv6 enable
+!
+
+
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip tftp source-interface GigabitEthernet0/0
+!         
+ip ssh version 2
+!
+!
+!
+!
+!
+control-plane
+ service-policy input system-cpp-policy
+!
+banner motd ^C This is CE1 in Pod Group 15 for POD 1 ^C
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ stopbits 1
+line vty 0
+ logging synchronous
+ login local
+ transport input all
+line vty 1
+ logging synchronous
+ login local
+ no exec
+ transport preferred none
+ transport input all
+ stopbits 1
+line vty 2 4
+ logging synchronous
+ login local
+ transport input all
+line vty 5 15
+ logging synchronous
+ login local
+ transport input all
+!
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="192.168.101.11" netPrefixLenV4="30"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="192.168.201.21" netPrefixLenV4="30"/>
+        <interface id="2" name="GigabitEthernet4" ipv4="10.0.0.17" netPrefixLenV4="30"/>
+        <interface id="3" name="GigabitEthernet5" ipv4="10.0.0.33" netPrefixLenV4="30"/>
+        <interface id="4" name="GigabitEthernet6"/>
+    </node>
+    <node name="CE2" type="SIMPLE" subtype="CSR1000v" location="98,200" ipv4="10.1.12.1">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname CE2
+!
+!
+vrf definition CustomerA
+ rd 65010:10
+ !
+ address-family ipv4
+  route-target export 65010:10
+  route-target import 65010:10
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition CustomerB
+ rd 65020:20
+ !
+ address-family ipv4
+  route-target export 65020:20
+  route-target import 65020:20
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 5 $1$3yOX$nIJ/qqQ69pXEBz56r8g740
+!
+no aaa new-model
+switch 1 provision c9300-24t
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name cisco.com
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ipv6 unicast-routing
+!
+crypto pki trustpoint TP-self-signed-1421162637
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1421162637
+ revocation-check none
+ rsakeypair TP-self-signed-1421162637
+!
+!
+crypto pki certificate chain TP-self-signed-1421162637
+!
+!
+!
+diagnostic bootup level minimal
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+file prompt quiet
+!
+username cisco privilege 15 secret 5 $1$sUa9$ueAt5OA3Dy6ZFvL4cCnId/
+!
+redundancy
+ mode sso
+!
+!
+transceiver type all
+ monitoring
+!
+!         
+class-map match-any system-cpp-police-topology-control
+  description Topology control
+class-map match-any system-cpp-police-sw-forward
+  description Sw forwarding, L2 LVX data, LOGGING
+class-map match-any system-cpp-default
+  description DHCP Snooping, EWLC control, EWCL data 
+class-map match-any system-cpp-police-sys-data
+  description Learning cache ovfl, Crypto Control, Exception, EGR Exception, NFL SAMPLED DATA, RPF Failed
+class-map match-any system-cpp-police-punt-webauth
+  description Punt Webauth
+class-map match-any system-cpp-police-l2lvx-control
+  description L2 LVX control packets
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+class-map match-any system-cpp-police-multicast-end-station
+  description MCAST END STATION
+class-map match-any system-cpp-police-multicast
+  description Transit Traffic and MCAST Data
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+class-map match-any system-cpp-police-dot1x-auth
+  description DOT1X Auth
+class-map match-any system-cpp-police-data
+  description ICMP redirect, ICMP_GEN and BROADCAST
+class-map match-any system-cpp-police-stackwise-virt-control
+  description Stackwise Virtual
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-routing-control
+  description Routing control
+class-map match-any system-cpp-police-protocol-snooping
+  description Protocol snooping
+class-map match-any system-cpp-police-system-critical
+  description System Critical and Gold
+!
+policy-map system-cpp-policy
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!         
+!
+!
+!
+!
+interface Loopback0
+ vrf forwarding CustomerA
+ ip address 10.1.12.1 255.255.255.255
+!
+interface Loopback1
+ vrf forwarding CustomerB
+ ip address 10.1.22.1 255.255.255.255
+!
+interface Loopback2
+ vrf forwarding CustomerA
+ ip address 172.16.12.1 255.255.255.0
+!
+interface Loopback3
+ vrf forwarding CustomerB
+ ip address 172.16.22.1 255.255.255.0
+!
+interface GigabitEthernet1
+ description Management Network for Pod
+ vrf forwarding Mgmt-vrf
+ ip address 172.21.116.21 255.255.255.0
+ speed 1000
+ negotiation auto
+!
+
+!
+interface GigabitEthernet2
+ description Link to PE2 TenGigabitEthernet0/0/0/3
+ no switchport
+ vrf forwarding CustomerA
+ ip address 192.168.102.12 255.255.255.0
+!
+interface GigabitEthernet3
+ description Link to PE2 TenGigabitEthernet0/0/0/4
+ no switchport
+ vrf forwarding CustomerB
+ ip address 192.168.202.22 255.255.255.0
+!
+
+!
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip tftp source-interface GigabitEthernet0/0
+!
+ip ssh version 2
+!
+!         
+!
+!
+!
+control-plane
+ service-policy input system-cpp-policy
+!
+banner motd ^C This is CE2 in Pod Group 15 for POD 1 ^C
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ stopbits 1
+line vty 0 4
+ logging synchronous
+ login local
+ transport input all
+line vty 5 15
+ logging synchronous
+ login local
+ transport input all
+!
+!         
+!
+!
+!
+!
+!
+end
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="192.168.102.12" netPrefixLenV4="30"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="192.168.202.22" netPrefixLenV4="30"/>
+        <interface id="2" name="GigabitEthernet4" ipv4="10.0.0.18" netPrefixLenV4="30"/>
+        <interface id="3" name="GigabitEthernet5" ipv4="10.0.0.34" netPrefixLenV4="30"/>
+        <interface id="4" name="GigabitEthernet6"/>
+    </node>
+    <node name="CE3" type="SIMPLE" subtype="CSR1000v" location="742,127" ipv4="10.1.13.1">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname CE3
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+hostname CE3
+!
+!
+vrf definition CustomerA
+ rd 65010:10
+ !
+ address-family ipv4
+  route-target export 65010:10
+  route-target import 65010:10
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition CustomerB
+ rd 65020:20
+ !
+ address-family ipv4
+  route-target export 65020:20
+  route-target import 65020:20
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 5 $1$ySOK$BHeP5E0Dzo8H6K3.rFlqe1
+!
+no aaa new-model
+switch 1 provision c9300-24t
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name cisco.com
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!no ip domain lookup
+ip domain name cisco.com
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ipv6 unicast-routing
+!
+crypto pki trustpoint TP-self-signed-4036092556
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-4036092556
+ revocation-check none
+ rsakeypair TP-self-signed-4036092556
+!
+!
+crypto pki certificate chain TP-self-signed-4036092556
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 31323431 37373831 3430301E 170D3139 31323035 32333035 
+  34375A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 32343137 
+  37383134 30308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 
+  0A028201 0100BF06 EC77CD47 6F8749F8 214926EB E3012BB9 E1882448 856F28A8 
+  650B412C 36080FED F6A7A50F 859192E1 607304AD 8D099C65 B606C325 85F8966E 
+  B5807634 C786D2F2 F1565A41 58CE4047 6E6EDDFD 37AE4B49 39C13544 8F498C51 
+  CFAB202D 843D1A37 4B39C6D3 2E1DADFD 5D909AE6 7C69F6CE 8F67D928 7A3EF9B2 
+  3001B052 1A972798 03CEE8F0 21F2DB9D 48D9D732 D0CE0AB4 89C8B392 E9D182EB 
+  CC3E59E8 C9DCBE79 05594D7E BA8EE803 D08F552C 6AD5B5ED 8F781405 28492E08 
+  4240E553 E21266BB E66D8526 A475EA45 18E84C95 6D6945D9 55ECC3EC F11E14DE 
+  931F4468 717B131D 939A56B6 C32175A5 95677F70 80FB4328 034C38D6 181CB2C5 
+  52A1855D 78CB0203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 
+  301F0603 551D2304 18301680 14E2C9AE F4B64034 C8487AF5 5A0FA3E4 94E4B397 
+  B8301D06 03551D0E 04160414 E2C9AEF4 B64034C8 487AF55A 0FA3E494 E4B397B8 
+  300D0609 2A864886 F70D0101 05050003 82010100 1655A051 0DE211FB EBFFCCBC 
+  AE828E11 7E01CB9A 1E4B3A7E 1DF8C620 83C6C4AE 82CEFAC7 A9AE39D1 90C52925 
+  9B330025 4E511CC5 0685836F 12086CD5 6F22EF41 284CED7E F0CCBEDB 8E69385C 
+  B8F4D4C3 F77AF455 03C247C5 51402DF4 7133177F DC90F246 4139FD83 82801AAB 
+  FB3A495C 7437ADCE FA82D6BF 88096D20 83C71EDF 0841DF26 AAA5FC0C 7B1C366A 
+  7A32BF09 7E0CC5ED 075D9D2A BA8AAF3A 62ABD5E8 3755AE60 D16B7350 683AB7F2 
+  7C16B5CB AAF3FC64 765FEE0A 67B1A3CB C718150D 3F0F3F91 124307AF 1DF76080 
+  F93ECCC4 425B573C C7550922 0A5FF955 664B002B 18C1978D D18C6DEF DF609522 
+  710C99C1 80453BE9 152E9717 7D9A79B2 C374C1BE
+        quit
+!
+!
+!
+diagnostic bootup level minimal
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+username cisco privilege 15 secret 5 $1$.k8U$QIlef.ug.Y/.wUapOvd.M.
+!
+redundancy
+ mode sso
+!
+!         
+transceiver type all
+ monitoring
+!
+!
+class-map match-any system-cpp-police-topology-control
+  description Topology control
+class-map match-any system-cpp-police-sw-forward
+  description Sw forwarding, L2 LVX data, LOGGING
+class-map match-any system-cpp-default
+  description DHCP Snooping, EWLC control, EWCL data 
+class-map match-any system-cpp-police-sys-data
+  description Learning cache ovfl, Crypto Control, Exception, EGR Exception, NFL SAMPLED DATA, RPF Failed
+class-map match-any system-cpp-police-punt-webauth
+  description Punt Webauth
+class-map match-any system-cpp-police-l2lvx-control
+  description L2 LVX control packets
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+class-map match-any system-cpp-police-multicast-end-station
+  description MCAST END STATION
+class-map match-any system-cpp-police-multicast
+  description Transit Traffic and MCAST Data
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+class-map match-any system-cpp-police-dot1x-auth
+  description DOT1X Auth
+class-map match-any system-cpp-police-data
+  description ICMP redirect, ICMP_GEN and BROADCAST
+class-map match-any system-cpp-police-stackwise-virt-control
+  description Stackwise Virtual
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-routing-control
+  description Routing control
+class-map match-any system-cpp-police-protocol-snooping
+  description Protocol snooping
+class-map match-any system-cpp-police-system-critical
+  description System Critical and Gold
+!
+policy-map system-cpp-policy
+!
+! 
+!
+!
+!
+!         
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ vrf forwarding CustomerA
+ ip address 10.1.13.1 255.255.255.255
+!
+interface Loopback1
+ vrf forwarding CustomerB
+ ip address 10.1.23.1 255.255.255.255
+!
+interface Loopback2
+ vrf forwarding CustomerA
+ ip address 172.16.13.1 255.255.255.0
+!
+interface Loopback3
+ vrf forwarding CustomerB
+ ip address 172.16.23.1 255.255.255.0
+!
+interface GigabitEthernet1
+ description Management Network for Pod
+ vrf forwarding Mgmt-vrf
+ ip address 172.21.116.31 255.255.255.0
+ speed 1000
+ negotiation auto
+!
+interface GigabitEthernet2
+ description Link to PE3 GigabitEthernet0/0/0
+ no switchport
+ vrf forwarding CustomerA
+ ip address 192.168.103.13 255.255.255.0
+!
+interface GigabitEthernet3
+ description Link to PE3 GigabitEthernet0/0/1
+ no switchport
+ vrf forwarding CustomerB
+ ip address 192.168.203.23 255.255.255.0
+!
+
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip tftp source-interface GigabitEthernet1
+!         
+ip ssh version 2
+!
+!
+!
+!
+!
+control-plane
+ service-policy input system-cpp-policy
+!
+banner motd ^C This is CE3 in Pod Group 15 for POD 1 ^C
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ stopbits 1
+line vty 0 4
+ logging synchronous
+ login local
+ transport input all
+line vty 5 15
+ logging synchronous
+ login local
+ transport input all
+!
+!
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="192.168.103.13" netPrefixLenV4="30"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="192.168.203.23" netPrefixLenV4="30"/>
+        <interface id="2" name="GigabitEthernet4"/>
+        <interface id="3" name="GigabitEthernet5"/>
+        <interface id="4" name="GigabitEthernet6"/>
+    </node>
+    <node name="PE1" type="SIMPLE" subtype="IOS XRv 9000" location="257,49" ipv4="10.1.1.1">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR9000v Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname PE1
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+username cisco
+group root-lr
+group cisco-support
+password cisco
+!
+username admin
+group root-lr
+group cisco-support
+password admin
+!
+username lab
+group root-lr
+group cisco-support
+password lab
+!
+!
+hostname PE1
+banner motd ^ This is PE1 in Pod Group 15 for POD 1 ^
+logging console debugging
+domain name cisco.com
+domain lookup disable
+telnet vrf Mgmt-intf ipv4 server max-servers 15
+username cisco
+ group root-lr
+ group cisco-support
+ secret 5 $1$kbUc$OXrslqXxVQTCzeQk4i6ho1
+!
+cdp
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 0 0
+ transport input all
+!
+service cli interactive disable
+tftp client vrf Mgmt-intf source-interface MgmtEth0/RP0/CPU0/0
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+interface Loopback0
+ ipv4 address 10.1.1.1 255.255.255.255
+!
+interface MgmtEth0/RP0/CPU0/0
+ description Management Network for Pod
+ vrf Mgmt-intf
+ ipv4 address 172.21.116.10 255.255.255.0
+!
+interface GigE0/0/0/1
+ description Link to P1 GigabitEthernet0/0/0/1
+ ipv4 address 192.168.111.1 255.255.255.0
+!
+interface GigE0/0/0/2
+ description Link to P2 GigabitEthernet0/0/0/1
+ ipv4 address 192.168.121.1 255.255.255.0
+!
+interface GigE0/0/0/3
+ description Link to CE1 TenGigabitEthernet1/1/1
+ ipv4 address 192.168.101.1 255.255.255.0
+!
+interface GigE0/0/0/4
+ description Link to CE1 TenGigabitEthernet1/1/2
+ ipv4 address 192.168.201.1 255.255.255.0
+!
+router ospf 1
+ router-id 10.1.1.1
+ address-family ipv4
+ area 0
+  interface Loopback0
+  !
+  interface GigE0/0/0/1
+  !
+  interface GigE0/0/0/2
+   cost 10
+  !
+ !
+!
+router bgp 65000
+ address-family ipv4 unicast
+ !
+ neighbor 10.12.12.12
+  remote-as 65000
+  update-source Loopback0
+  address-family ipv4 unicast
+   next-hop-self
+  !
+ !
+!
+mpls oam
+!
+mpls ldp
+ interface GigE0/0/0/1
+ !
+ interface GigE0/0/0/2
+ !
+!
+end
+!
+!
+router ospf 1
+  log adjacency changes
+  area 0
+    interface GigabitEthernet0/0/0/1
+      cost 1
+    !
+    interface GigabitEthernet0/0/0/2
+      cost 1
+    !
+    interface GigabitEthernet0/0/0/3
+      cost 1
+    !
+    interface GigabitEthernet0/0/0/4
+      cost 1
+    !
+    interface Loopback0
+      passive enable
+    !
+  !
+!
+route-policy bgp_in
+  pass
+end-policy
+!
+route-policy bgp_out
+  pass
+end-policy
+!
+router bgp 1
+  bgp router-id 192.168.0.2
+  address-family ipv4 unicast
+    network 192.168.0.2/32
+  !
+! iBGP
+!
+! iBGP peers
+  !
+  neighbor 192.168.0.1
+    description iBGP peer CE1
+    remote-as 1
+    update-source Loopback0
+    address-family ipv4 unicast
+    !
+    !
+  !
+  neighbor 192.168.0.5
+    description iBGP peer CE2
+    remote-as 1
+    update-source Loopback0
+    address-family ipv4 unicast
+    !
+    !
+  !
+  neighbor 192.168.0.8
+    description iBGP peer CE3
+    remote-as 1
+    update-source Loopback0
+    address-family ipv4 unicast
+    !
+    !
+  !
+  neighbor 192.168.0.3
+    description iBGP peer P1
+    remote-as 1
+    update-source Loopback0
+    address-family ipv4 unicast
+    !
+    !
+  !
+  neighbor 192.168.0.4
+    description iBGP peer P2
+    remote-as 1
+    update-source Loopback0
+    address-family ipv4 unicast
+    !
+    !
+  !
+  neighbor 192.168.0.6
+    description iBGP peer PE2
+    remote-as 1
+    update-source Loopback0
+    address-family ipv4 unicast
+    !
+    !
+  !
+  neighbor 192.168.0.7
+    description iBGP peer PE3
+    remote-as 1
+    update-source Loopback0
+    address-family ipv4 unicast
+    !
+    !
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="192.168.111.1" netPrefixLenV4="30"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="192.168.121.1" netPrefixLenV4="30"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="192.168.101.1" netPrefixLenV4="30"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4" ipv4="192.168.201.1" netPrefixLenV4="30"/>
+        <interface id="5" name="GigabitEthernet0/0/0/5"/>
+        <interface id="6" name="GigabitEthernet0/0/0/6"/>
+    </node>
+    <node name="PE2" type="SIMPLE" subtype="IOS XRv 9000" location="256,190" ipv4="10.2.2.2">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR9000v Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname PE2
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+username cisco
+group root-lr
+group cisco-support
+password cisco
+!
+username admin
+group root-lr
+group cisco-support
+password admin
+!
+username lab
+group root-lr
+group cisco-support
+password lab
+!
+!
+hostname PE2
+banner motd ^ This is PE2 in Pod Group 15 for POD 1 ^
+logging console debugging
+domain name cisco.com
+domain lookup disable
+telnet vrf Mgmt-intf ipv4 server max-servers 15
+username cisco
+ group root-lr
+ group cisco-support
+ secret 5 $1$cRCU$I0mLY.23gZMpy2BhA0REg/
+!
+cdp
+vrf CustomerA
+ address-family ipv4 unicast
+  import route-target
+   65000:10
+  !
+  export route-target
+   65000:10
+  !
+ !
+!
+vrf CustomerB
+ address-family ipv4 unicast
+  import route-target
+   65000:20
+  !
+  export route-target
+   65000:20
+  !
+ !
+!
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 0 0
+ transport input all
+!
+tftp client source-interface MgmtEth0/RP0/CPU0/0
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+interface Loopback0
+ ipv4 address 10.2.2.2 255.255.255.255
+!
+interface MgmtEth0/RP0/CPU0/0
+ description Management Network for Pod
+ vrf Mgmt-intf
+ ipv4 address 172.21.116.20 255.255.255.0
+!
+interface GigE0/0/0/0
+ shutdown
+!
+interface GigE0/0/0/1
+ description Link to P1 GigabitEthernet0/0/0/2
+ ipv4 address 192.168.112.2 255.255.255.0
+!
+interface GigE0/0/0/2
+ description Link to P2 GigabitEthernet0/0/0/2
+ ipv4 address 192.168.122.2 255.255.255.0
+!
+interface GigE0/0/0/3
+ description Link to CE2 TenGigabitEthernet1/1/1
+ vrf CustomerA
+ ipv4 address 192.168.102.2 255.255.255.0
+!
+interface GigE0/0/0/4
+ description Link to CE2 TenGigabitEthernet1/1/2
+ vrf CustomerB
+ ipv4 address 192.168.202.2 255.255.255.0
+!
+router ospf 1
+ router-id 10.2.2.2
+ address-family ipv4
+ area 0
+  interface Loopback0
+  !
+  interface GigE0/0/0/1
+   cost 10
+  !
+  interface GigE0/0/0/2
+  !
+ !
+!
+router bgp 65000
+ address-family vpnv4 unicast
+ !
+ neighbor 10.12.12.12
+  remote-as 65000
+  update-source Loopback0
+  address-family vpnv4 unicast
+   next-hop-self
+  !
+ !
+ vrf CustomerA
+  rd 65000:10
+  address-family ipv4 unicast
+   redistribute connected
+  !
+ !
+ vrf CustomerB
+  rd 65000:20
+  address-family ipv4 unicast
+   redistribute connected
+  !
+ !
+!
+mpls oam
+!
+mpls ldp
+ interface GigE0/0/0/1
+ !
+ interface GigE0/0/0/2
+ !
+!
+end
+    !
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="192.168.112.2" netPrefixLenV4="30"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="192.168.122.2" netPrefixLenV4="30"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="192.168.102.2" netPrefixLenV4="30"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4" ipv4="192.168.202.2" netPrefixLenV4="30"/>
+        <interface id="5" name="GigabitEthernet0/0/0/5"/>
+        <interface id="6" name="GigabitEthernet0/0/0/6"/>
+    </node>
+    <node name="P1" type="SIMPLE" subtype="IOS XRv 9000" location="402,57" ipv4="10.11.11.11">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR9000v Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname P1
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+username cisco
+group root-lr
+group cisco-support
+password cisco
+!
+username admin
+group root-lr
+group cisco-support
+password admin
+!
+username lab
+group root-lr
+group cisco-support
+password lab
+!
+!
+hostname P1
+banner motd ^ This is P1 in Pod Group 15 for POD 1 ^
+logging console debugging
+domain name cisco.com
+domain lookup disable
+telnet vrf Mgmt-intf ipv4 server max-servers 15
+username cisco
+ group root-lr
+ group cisco-support
+ secret 5 $1$q7si$R.ZvheDiTunniC7Ui.fW60
+!
+cdp
+cdp advertise v1
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+!
+line console
+ exec-timeout 0 0
+ session-timeout 0
+!         
+line default
+ exec-timeout 0 0
+ transport input all
+!
+tftp client source-interface MgmtEth0/RP0/CPU0/0
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+interface Loopback0
+ ipv4 address 10.11.11.11 255.255.255.255
+!
+interface MgmtEth0/RP0/CPU0/0
+ description Management Network for Pod
+ vrf Mgmt-intf
+ ipv4 address 172.21.116.110 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ shutdown 
+!
+interface GigabitEthernet0/0/0/1
+ description Link to PE1 TenGigabitEthernet0/0/0/1
+ ipv4 address 192.168.111.11 255.255.255.0
+!
+interface GigabitEthernet0/0/0/2
+ description Link to PE2 TenGigabitEthernet0/0/0/1
+ ipv4 address 192.168.112.11 255.255.255.0
+!
+interface GigabitEthernet0/0/0/3
+ description Link to PE3 TenGigabitEthernet0/0/12
+ ipv4 address 192.168.113.11 255.255.255.0
+!
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+interface GigabitEthernet0/0/0/5
+ description Link to P2 GigabitEthernet0/0/0/5
+ ipv4 address 192.168.12.11 255.255.255.0
+!
+interface GigabitEthernet0/0/0/6
+ description Link to P2 GigabitEthernet0/0/0/6
+ ipv4 address 192.168.21.11 255.255.255.0
+!
+router ospf 1
+ router-id 10.11.11.11
+ area 0
+  mpls traffic-eng
+  interface Loopback0
+  !
+  interface GigabitEthernet0/0/0/1
+  !
+  interface GigabitEthernet0/0/0/2
+  !
+  interface GigabitEthernet0/0/0/3
+  !
+  interface GigabitEthernet0/0/0/5
+  !
+  interface GigabitEthernet0/0/0/6
+   cost 2
+  !
+ !
+ mpls traffic-eng router-id Loopback0
+!
+mpls oam
+!         
+rsvp
+ interface GigabitEthernet0/0/0/1
+  bandwidth 1000 200
+ !
+ interface GigabitEthernet0/0/0/2
+  bandwidth 1000 200
+ !
+ interface GigabitEthernet0/0/0/3
+  bandwidth 1000 200
+ !
+ interface GigabitEthernet0/0/0/5
+  bandwidth 2000 200
+ !
+ interface GigabitEthernet0/0/0/6
+  bandwidth 2000 200
+ !
+!
+mpls traffic-eng
+ interface GigabitEthernet0/0/0/1
+ !
+ interface GigabitEthernet0/0/0/2
+ !
+ interface GigabitEthernet0/0/0/3
+ !
+ interface GigabitEthernet0/0/0/5
+ !
+ interface GigabitEthernet0/0/0/6
+ !
+!
+mpls ldp
+ log
+  neighbor
+  graceful-restart
+  session-protection
+ !
+ igp sync delay on-session-up 5
+ discovery
+  hello holdtime 10
+  hello interval 3
+ !
+ router-id 10.11.11.11
+ session protection
+ interface GigabitEthernet0/0/0/1
+ !
+ interface GigabitEthernet0/0/0/2
+ !        
+ interface GigabitEthernet0/0/0/3
+ !
+ interface GigabitEthernet0/0/0/5
+ !
+ interface GigabitEthernet0/0/0/6
+ !
+!
+ipsla
+ responder
+  type udp ipv4 address 10.11.11.11 port 3000
+ !
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+end
+    !
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="192.168.111.11" netPrefixLenV4="30"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="192.168.112.11" netPrefixLenV4="30"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="192.168.113.11" netPrefixLenV4="30"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4"/>
+        <interface id="5" name="GigabitEthernet0/0/0/5" ipv4="192.168.12.11" netPrefixLenV4="30"/>
+        <interface id="6" name="GigabitEthernet0/0/0/6" ipv4="192.168.21.11" netPrefixLenV4="30"/>
+        <interface id="7" name="GigabitEthernet0/0/0/7"/>
+    </node>
+    <node name="P2" type="SIMPLE" subtype="IOS XRv 9000" location="408,189" ipv4="10.12.12.12">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR9000v Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname P2
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+username cisco
+group root-lr
+group cisco-support
+password cisco
+!
+username admin
+group root-lr
+group cisco-support
+password admin
+!
+username lab
+group root-lr
+group cisco-support
+password lab
+!
+!
+hostname P2
+banner motd ^ This is P2 in Pod Group 15 for POD 1 ^
+logging console debugging
+domain name cisco.com
+domain lookup disable
+telnet vrf Mgmt-intf ipv4 server max-servers 15
+username cisco
+ group root-lr
+ group cisco-support
+ secret 5 $1$PCWA$4YVHtDkvJc9nlb84vAftW0
+!
+cdp
+vrf Common
+ description VPN Common Services
+ address-family ipv4 unicast
+  import route-target
+   65000:32
+  !
+  export route-target
+   65000:31
+  !       
+  maximum prefix 1000
+ !
+!
+vrf Internet
+ description Internet Simulation
+ address-family ipv4 unicast
+  import route-target
+   65000:40
+  !
+  export route-target
+   65000:40
+  !
+  maximum prefix 1000
+ !
+!
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 0 0
+ transport input all
+!
+tftp client source-interface MgmtEth0/RP0/CPU0/0
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+interface Loopback0
+ ipv4 address 10.12.12.12 255.255.255.255
+!
+interface Loopback30
+ description VPN Common Services
+ vrf Common
+ ipv4 address 172.16.100.100 255.255.255.255
+!
+interface Loopback41
+ ipv4 address 209.165.200.225 255.255.255.224
+!         
+interface Loopback42
+ ipv4 address 209.165.201.1 255.255.255.224
+!
+interface Loopback43
+ ipv4 address 209.165.202.129 255.255.255.224
+!
+interface Loopback44
+ vrf Internet
+ ipv4 address 209.165.201.1 255.255.255.224
+!
+interface Loopback45
+ vrf Internet
+ ipv4 address 209.165.202.129 255.255.255.224
+!
+interface MgmtEth0/RP0/CPU0/0
+ description Management Network for Pod
+ vrf Mgmt-intf
+ ipv4 address 172.21.116.120 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ shutdown
+!
+interface GigabitEthernet0/0/0/1
+ description Link to PE1 TenGigabitEthernet0/0/0/2
+ cdp
+ ipv4 address 192.168.121.12 255.255.255.0
+!
+interface GigabitEthernet0/0/0/2
+ description Link to PE2 TenGigabitEthernet0/0/0/2
+ cdp
+ ipv4 address 192.168.122.12 255.255.255.0
+!
+interface GigabitEthernet0/0/0/3
+ description Link to PE3 TenGigabitEthernet0/0/13
+ cdp
+ ipv4 address 192.168.123.12 255.255.255.0
+!
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+interface GigabitEthernet0/0/0/5
+ description Link to P1 GigabitEthernet0/0/0/5
+ cdp
+ ipv4 address 192.168.12.12 255.255.255.0
+!
+interface GigabitEthernet0/0/0/6
+ description Link to P1 GigabitEthernet0/0/0/6
+ cdp
+ ipv4 address 192.168.21.12 255.255.255.0
+!
+interface preconfigure MgmtEth0/RSP0/CPU0/0
+ ipv4 address 10.10.10.26 255.255.255.0
+!
+interface preconfigure MgmtEth0/RSP0/CPU0/1
+ shutdown
+!
+route-policy RP
+  if destination in (209.165.201.0/27) then
+    prepend as-path 64498
+    prepend as-path 64497
+  endif
+  if destination in (209.165.202.128/27) then
+    prepend as-path 64496
+    prepend as-path 64495
+    prepend as-path 64498
+  endif
+end-policy
+!
+router ospf 1
+ router-id 10.12.12.12
+ maximum paths 32
+ area 0
+  mpls traffic-eng
+  interface Loopback0
+  !
+  interface GigabitEthernet0/0/0/1
+  !
+  interface GigabitEthernet0/0/0/2
+  !
+  interface GigabitEthernet0/0/0/3
+  !
+  interface GigabitEthernet0/0/0/5
+  !
+  interface GigabitEthernet0/0/0/6
+   cost 2
+  !
+ !
+ mpls traffic-eng router-id Loopback0
+!
+router bgp 65000
+ address-family ipv4 unicast
+  redistribute connected route-policy RP
+ !
+ address-family vpnv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+ address-family vpnv6 unicast
+ !
+ address-family l2vpn vpls-vpws
+ !
+ neighbor 10.1.1.1
+  remote-as 65000
+  update-source Loopback0
+  address-family ipv4 unicast
+   route-reflector-client
+  !
+  address-family ipv4 labeled-unicast
+   route-reflector-client
+  !
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family ipv6 labeled-unicast
+   route-reflector-client
+  !
+  address-family vpnv6 unicast
+   route-reflector-client
+  !
+  address-family l2vpn vpls-vpws
+   route-reflector-client
+  !
+ !
+ neighbor 10.2.2.2
+  remote-as 65000
+  update-source Loopback0
+  address-family ipv4 unicast
+   route-reflector-client
+  !
+  address-family ipv4 labeled-unicast
+   route-reflector-client
+  !
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family ipv6 labeled-unicast
+   route-reflector-client
+  !       
+  address-family vpnv6 unicast
+   route-reflector-client
+  !
+  address-family l2vpn vpls-vpws
+   route-reflector-client
+  !
+ !
+ neighbor 10.3.3.3
+  remote-as 65000
+  update-source Loopback0
+  address-family ipv4 unicast
+   route-reflector-client
+  !
+  address-family ipv4 labeled-unicast
+   route-reflector-client
+  !
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family ipv6 labeled-unicast
+   route-reflector-client
+  !
+  address-family vpnv6 unicast
+   route-reflector-client
+  !
+  address-family l2vpn vpls-vpws
+   route-reflector-client
+  !
+ !
+ vrf Common
+  rd 65000:30
+  address-family ipv4 unicast
+   network 172.16.100.100/32
+  !
+ !
+ vrf Internet
+  rd 65000:40
+  address-family ipv4 unicast
+   redistribute connected route-policy RP
+  !
+ !
+!
+mpls oam
+!
+rsvp
+ bandwidth mam percentage max-reservable 1000
+ interface GigabitEthernet0/0/0/1
+  bandwidth 2000 200
+ !
+ interface GigabitEthernet0/0/0/2
+  bandwidth 2000 200
+ !
+ interface GigabitEthernet0/0/0/3
+  bandwidth 2000 200
+ !
+ interface GigabitEthernet0/0/0/5
+  bandwidth 2000 200
+ !
+ interface GigabitEthernet0/0/0/6
+  bandwidth 2000 200
+ !
+!
+mpls traffic-eng
+ interface GigabitEthernet0/0/0/1
+ !
+ interface GigabitEthernet0/0/0/2
+ !
+ interface GigabitEthernet0/0/0/3
+ !        
+ interface GigabitEthernet0/0/0/5
+ !
+ interface GigabitEthernet0/0/0/6
+ !
+!
+mpls ldp
+ log
+  neighbor
+  graceful-restart
+  session-protection
+ !
+ igp sync delay on-session-up 5
+ discovery
+  hello holdtime 10
+  hello interval 3
+ !
+ router-id 10.12.12.12
+ session protection
+ interface GigabitEthernet0/0/0/1
+ !
+ interface GigabitEthernet0/0/0/2
+ !
+ interface GigabitEthernet0/0/0/3
+ !
+ interface GigabitEthernet0/0/0/5
+ !
+ interface GigabitEthernet0/0/0/6
+ !
+!
+ipsla
+ responder
+  type udp ipv4 address 10.12.12.12 port 3000
+ !
+!
+ssh server v2
+ssh server vrf default
+ssh server vrf Mgmt-intf
+
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="192.168.121.12" netPrefixLenV4="30"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="192.168.122.12" netPrefixLenV4="30"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="192.168.123.12" netPrefixLenV4="30"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4"/>
+        <interface id="5" name="GigabitEthernet0/0/0/5" ipv4="192.168.12.12" netPrefixLenV4="30"/>
+        <interface id="6" name="GigabitEthernet0/0/0/6" ipv4="192.168.21.12" netPrefixLenV4="30"/>
+        <interface id="7" name="GigabitEthernet0/0/0/7"/>
+    </node>
+    <node name="PE3" type="SIMPLE" subtype="IOS XRv 9000" location="595,124" ipv4="10.3.3.3">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR9000v Config generated on 2021-02-02 05:13
+! by autonetkit_0.24.1
+!
+hostname PE3
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+username cisco
+group root-lr
+group cisco-support
+password cisco
+!
+username admin
+group root-lr
+group cisco-support
+password admin
+!
+username lab
+group root-lr
+group cisco-support
+password lab
+!
+!
+hostname PE3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 9 $9$knF6oWcwFKB8PB$g5ESl0Ib78Rj6WpKDmflC7S7ZSCfURRW/v/ScOfxZ.M
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name cisco.com
+!
+!
+!
+login on-success log
+ipv6 unicast-routing
+!         
+!
+!
+!
+!
+!
+!
+mpls label protocol ldp
+multilink bundle-name authenticated
+!
+!
+
+!
+!
+spanning-tree extend system-id
+sdm prefer default 
+no diagnostic bootup level
+!
+!
+username cisco secret cisco
+!
+
+!
+!
+!
+!
+transceiver type all
+ monitoring
+cdp run
+!
+!
+! 
+!
+!
+!
+!
+!         
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.3.3.3 255.255.255.255
+!
+interface GigabitEthernet0/0/0/4
+ description Link to CE3 GigabitEthernet1/0/1
+ ip address 192.168.103.3 255.255.255.0
+ negotiation auto
+ cdp enable
+!
+interface GigabitEthernet0/0/0/5
+ description link to CE3 GigabitEthernet1/0/2
+ ip address 192.168.203.3 255.255.255.0
+ speed 1000
+ no negotiation auto
+ cdp enable
+!
+
+!
+interface GigabitEthernet0/0/0/2
+ description Link to P1 GigabitEthernet0/0/0/3
+ ip address 192.168.113.3 255.255.255.0
+ cdp enable
+ mpls ip
+!
+interface GigabitEthernet0/0/0/3
+ description Link to P2 GigabitEthernet0/0/0/3
+ ip address 192.168.123.3 255.255.255.0
+ ip ospf cost 10
+ cdp enable
+ mpls ip
+!
+
+ 
+ interface MgmtEth0/RP0/CPU0/0
+ description Management Network for Pod
+ vrf Mgmt-intf
+ ipv4 address 172.21.116.30 255.255.255.0
+!
+router ospf 1
+ router-id 10.3.3.3
+ network 10.3.3.3 0.0.0.0 area 0
+ network 192.168.113.3 0.0.0.0 area 0
+ network 192.168.123.3 0.0.0.0 area 0
+!
+router bgp 65000
+ bgp log-neighbor-changes
+ neighbor 10.12.12.12 remote-as 65000
+ neighbor 10.12.12.12 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.12.12.12 activate
+  neighbor 10.12.12.12 next-hop-self
+ exit-address-family
+!
+router ospf 1
+ router-id 10.2.2.2
+ address-family ipv4
+ area 0
+  interface Loopback0
+  !
+  interface GigE0/0/0/1
+   cost 10
+  !
+  interface GigE0/0/0/2
+  !
+ !
+!
+router bgp 65000
+ address-family vpnv4 unicast
+ !
+ neighbor 10.12.12.12
+  remote-as 65000
+  update-source Loopback0
+  address-family vpnv4 unicast
+   next-hop-self
+  !
+ !
+ vrf CustomerA
+  rd 65000:10
+  address-family ipv4 unicast
+   redistribute connected
+  !
+ !
+ vrf CustomerB
+  rd 65000:20
+  address-family ipv4 unicast
+   redistribute connected
+  !
+ !
+!
+mpls oam
+!
+mpls ldp
+ interface GigE0/0/0/1
+ !
+ interface GigE0/0/0/2
+ !
+!
+end
+    !
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="192.168.113.3" netPrefixLenV4="30"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="192.168.123.3" netPrefixLenV4="30"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4" ipv4="192.168.103.3" netPrefixLenV4="30"/>
+        <interface id="5" name="GigabitEthernet0/0/0/5" ipv4="192.168.203.3" netPrefixLenV4="30"/>
+        <interface id="6" name="GigabitEthernet0/0/0/6"/>
+    </node>
+    <annotations/>
+    <connection dst="/virl:topology/virl:node[6]/virl:interface[2]" src="/virl:topology/virl:node[4]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[6]/virl:interface[3]" src="/virl:topology/virl:node[5]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[7]/virl:interface[2]" src="/virl:topology/virl:node[4]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[7]/virl:interface[3]" src="/virl:topology/virl:node[5]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[4]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[5]" src="/virl:topology/virl:node[1]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[5]/virl:interface[4]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[5]/virl:interface[5]" src="/virl:topology/virl:node[2]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[7]/virl:interface[6]" src="/virl:topology/virl:node[6]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[7]/virl:interface[7]" src="/virl:topology/virl:node[6]/virl:interface[7]"/>
+    <connection dst="/virl:topology/virl:node[8]/virl:interface[3]" src="/virl:topology/virl:node[6]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[8]/virl:interface[4]" src="/virl:topology/virl:node[7]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[2]/virl:interface[3]" src="/virl:topology/virl:node[1]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[2]/virl:interface[4]" src="/virl:topology/virl:node[1]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[8]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[2]" src="/virl:topology/virl:node[8]/virl:interface[6]"/>
+</topology>
