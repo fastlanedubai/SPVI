@@ -1693,7 +1693,6 @@ interface GigabitEthernet0/0/0/2
 interface GigabitEthernet0/0/0/3
  description Link to P2 
  ip address 192.168.123.3 255.255.255.0
- ip ospf cost 10
  cdp enable
  mpls ip
 !
